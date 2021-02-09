@@ -2,6 +2,9 @@ from flask import request, jsonify
 from app import app, db
 from app.models.tables import User, user_share_schema, users_share_schema
 
+import jwt
+import datetime
+
 @app.route("/")
 def home():
     print("aqui")
@@ -41,20 +44,27 @@ def signUp():
 @app.route("/auth/login", methods =["POST"])
 def login():
     body = request.get_json()
-    user = User.query.filter_by(user_name = body['user_name']).first()
+    user = User.query.filter_by(user_name = body['login_name']).first()
     if not user:
-        user = User.query.filter_by(email = body['email']).first()
+        user = User.query.filter_by(email = body['login_name']).first()
         if not user:
             return jsonify({"error": "nome de usuário ou email inválido"})
             
     if not user.verify_password(body['password']):
         return jsonify({"error": "senha inválida"})
     
-    search_user = user_share_schema.dump(user)
+    payload = {
+        "sub" : user.id,
+        "iat" : datetime.datetime.utcnow()
+    }
 
-    token = jwt.encode
+    #user.token_iat = payload['iat']
 
-    return jsonify(search_user)
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
+
+    
+
+    return jsonify({'token': token.decode('utf-8')})
 
 @app.route("/auth/delete", methods = ["POST"])
 def delete():

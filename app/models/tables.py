@@ -13,6 +13,9 @@ class User(db.Model):
     site = db.Column(db.String)
     bio = db.Column(db.Text)
 
+    token_iat = db.Column(db.String)
+
+
     def __init__(self, email, name, user_name, password):
         self.email = email
         self.name = name
@@ -31,12 +34,6 @@ class UserSchema(ma.Schema):
 
 user_share_schema = UserSchema()
 users_share_schema = UserSchema(many=True)
-
-
-
-
-
-
 
 
 class Publication(db.Model):
