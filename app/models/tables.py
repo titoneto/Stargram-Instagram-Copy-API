@@ -1,6 +1,8 @@
 from app import db, ma
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import datetime
+
 class User(db.Model):
     __tablename__ = "users"
 
@@ -17,6 +19,8 @@ class User(db.Model):
 
 
     def __init__(self, email, name, user_name, password):
+    #def __init__(self, email, name, user_name, password, image)
+        #self.image = image
         self.email = email
         self.name = name
         self.user_name = user_name
@@ -26,7 +30,7 @@ class User(db.Model):
         return check_password_hash(self.password, password) # verificando a senha pelo hast
 
     def __repr__(self):
-        return '<UUser: %r>' %self.user_name
+        return '<User: %r>' %self.user_name
 
 class UserSchema(ma.Schema):
     class Meta:
@@ -40,12 +44,20 @@ class Publication(db.Model):
     __tablename__ = "publications"
 
     id = db.Column(db.Integer, primary_key = True)
-    image = db.Column(db.BLOB, nullable=False)
+    image = db.Column(db.BLOB)
+    #image = db.Column(db.BLOB, nullable=False)
     description = db.Column(db.String)
     date = db.Column(db.DateTime, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     owner = db.relationship('User', foreign_keys = owner_id)
+
+    def __init__(self, description, owner_id):
+    #def __init__(self, description, date, owner_id, image)
+        #self.image = image
+        self.description = description
+        self.owner_id = owner_id
+        self.date = datetime.datetime.utcnow()
 
     def __repr__(self):
         return '<PPublication: %r>' %self.id
