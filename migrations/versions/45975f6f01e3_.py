@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c1312685fac7
+Revision ID: 45975f6f01e3
 Revises: 
-Create Date: 2021-02-12 13:13:57.440563
+Create Date: 2021-02-22 12:22:21.086431
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c1312685fac7'
+revision = '45975f6f01e3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,17 +28,19 @@ def upgrade():
     sa.Column('site', sa.String(), nullable=True),
     sa.Column('bio', sa.Text(), nullable=True),
     sa.Column('token_iat', sa.String(), nullable=True),
+    sa.Column('followers_number', sa.Integer(), nullable=True),
+    sa.Column('following_number', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_name')
     )
     op.create_table('conversations',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('date', sa.DateTime(), nullable=False),
-    sa.Column('user1_id', sa.Integer(), nullable=False),
-    sa.Column('user2_id', sa.Integer(), nullable=False),
+    sa.Column('self_id', sa.Integer(), nullable=False),
+    sa.Column('recipient_id', sa.Integer(), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
-    sa.ForeignKeyConstraint(['user1_id'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['user2_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['recipient_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['self_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('follow',
@@ -51,16 +53,17 @@ def upgrade():
     )
     op.create_table('publications',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('image', sa.BLOB(), nullable=True),
+    sa.Column('image', sa.BLOB(), nullable=False),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
+    sa.Column('likes', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('stories',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('image', sa.BLOB(), nullable=False),
+    sa.Column('image', sa.BLOB(), nullable=True),
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
@@ -72,6 +75,7 @@ def upgrade():
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.Column('publication_id', sa.Integer(), nullable=False),
+    sa.Column('likes', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['publication_id'], ['publications.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -98,6 +102,7 @@ def upgrade():
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.Column('comment_id', sa.Integer(), nullable=False),
+    sa.Column('likes', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['comment_id'], ['comments.id'], ),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
