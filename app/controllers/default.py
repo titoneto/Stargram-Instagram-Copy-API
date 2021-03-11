@@ -29,7 +29,6 @@ def signUp():
     email = body['email']
     password = body['password']
     image = body['image'].encode()
-    print(image)
 
     if User.query.filter_by(user_name = user_name).first():
         return jsonify({"error": "O Nome de usuário " + user_name + " não está disponível"})
